@@ -38,11 +38,13 @@ const UserSchema = new mongoose.Schema({
 
 });
 
-UserSchema.pre('save',async function(next){
-    const salt = await genSalt();
-    this.password=await hash(this.password,salt);
-    next();
-})
+// UserSchema.pre('save',async function(next){
+//     const salt = await genSalt(10);
+//     console.log(this.password)
+//     this.password=await hash(this.password,salt);
+//     console.log(this.password)
+//     next();
+// })
 
 const User=mongoose.model('User',UserSchema);
 

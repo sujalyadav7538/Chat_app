@@ -7,111 +7,114 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { toast } from "sonner";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { userStore } from "@/store";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate=useNavigate();
-  const {setUserInfo}=userStore();
-  
+  const navigate = useNavigate();
+  const { setUserInfo } = userStore();
+  const [toggle, setToggle] = useState(false);
 
-  const validateSignup=()=>{
-    if(!email.length){
-      toast.error('Email is required!');
+  const validateSignup = () => {
+    if (!email.length) {
+      toast.error("Email is required!");
       return false;
     }
-    if(!password.length){
-      toast.error('Password is required!');
+    if (!password.length) {
+      toast.error("Password is required!");
       return false;
     }
-    if(password.length){
-      if(!confirmPassword.length){
-        toast.error('Enter ConfirmPassword!');
+    if (password.length) {
+      if (!confirmPassword.length) {
+        toast.error("Enter ConfirmPassword!");
         return false;
-      }
-      else if(confirmPassword!=password){
-        toast.error('Wrong Password!!');
-        setPassword('')
-        setConfirmPassword('')
+      } else if (confirmPassword != password) {
+        toast.error("Wrong Password!!");
+        setPassword("");
+        setConfirmPassword("");
         return false;
       }
     }
 
     return true;
+  };
 
-  }
+  const handleSingup = async () => {
+    setToggle(true);
+    try {
+      if (validateSignup()) {
+        const response = await fetch("http://localhost:8747/auth/singup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: "include",
+        });
+        const data = await response.json();
 
-  const handleSingup=async()=>{
-   try {
-     if(validateSignup()){
-       const response=await fetch('http://localhost:8747/auth/singup',{
-         method:'POST',
-         headers:{
-           'Content-Type':'application/json',
-         },
-         body:JSON.stringify({email,password}),
-         credentials:"include"             
-       });
-       const data=await response.json();
- 
-       if(data.success==false) return console.log(data.message);
-       setUserInfo(data)
-       navigate('/profile');
-       
+        if (data.success == false) return console.log(data.message);
+        setUserInfo(data);
+        toast.message(data.message);
+        navigate("/profile");
       }
     } catch (error) {
-     toast.error(error.message)
+      toast.error(error.message);
+    } finally {
+      setToggle(false);
     }
   };
 
   const handleLogin = async () => {
+    setToggle(true);
     try {
       if (!email.length) {
-        toast.error('Email is required!');
+        toast.error("Email is required!");
         return false;
       }
       if (!password.length) {
-        toast.error('Password is required!');
+        toast.error("Password is required!");
         return false;
       }
-  
+
       const response = await fetch("http://localhost:8747/auth/login", {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
+        credentials: "include",
       });
-  
+
+      const data = await response.json();
       if (!response.ok) {
         toast.error("Failed to login. Please try again.");
+        console.log(data)
         return false;
       }
-  
-      const data = await response.json();
-  
+
+
       if (data.success === false) {
         return false;
       } else {
         setUserInfo(data);
+        toast.message(data.message);
         if (data.profileSetup) {
-          navigate('/chat');
+          navigate("/chat");
         } else {
-          navigate('/profile');
+          navigate("/profile");
         }
-        return true;
       }
     } catch (error) {
       toast.error(error.message);
-      return false;
+    } finally {
+      setToggle(false);
     }
   };
-  
-  
+
   return (
     <div className="h-[100vh] w-[100vw] flex items-center justify-center">
       <div className="h-[80vh] w-[80vw] bg-white border-2  border-white text-opacity-90 shadow-2xl md:w-[90vw] lg:w-[70vw] xl:w-[60vw] grid xl:grid-cols-2 rounded-3xl">
@@ -156,7 +159,9 @@ const Auth = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <Button className="rounded-full  p-6" onClick={handleLogin}>Login</Button>
+                <Button className="rounded-full  p-6" onClick={handleLogin} disabled={toggle}>
+                {toggle?'Loging...':'Login'}
+                </Button>
               </TabsContent>
               <TabsContent className="flex flex-col gap-5 mt-10" value="signup">
                 <Input
@@ -180,14 +185,15 @@ const Auth = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                                <Button className="rounded-full  p-6" onClick={handleSingup} >Sign UP</Button>
-
+                <Button className={`rounded-full  p-6 `} onClick={handleSingup} disabled={toggle}>
+                  {toggle?'Sigining...':'Sign Up'}
+                </Button>
               </TabsContent>
             </Tabs>
           </div>
         </div>
         <div className="hidden xl:flex justify-center items-center">
-          <img src={Background} alt="" className="h-[500px]"/>
+          <img src={Background} alt="" className="h-[500px]" />
         </div>
       </div>
     </div>

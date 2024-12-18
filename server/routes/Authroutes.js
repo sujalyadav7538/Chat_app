@@ -1,12 +1,11 @@
 import { Router } from "express";
-import { Login, SingUp } from "../controller/Authcontroller.js";
+import { Login, SingUp ,getUserinfo } from "../controller/Authcontroller.js";
+import { verifyToken } from "../middlewares/verifyToken.js";
 
 const route =Router();
 
 route.post('/singup',SingUp);
-route.post('/login',(req,res,next)=>{
-    console.log('Logining');
-    next();
-},Login);
+route.post('/login',Login);
+route.get('/userinfo',verifyToken,getUserinfo)
 
 export default route;

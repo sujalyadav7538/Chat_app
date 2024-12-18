@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import AuthRoute from './routes/Authroutes.js';
+import UserRoute from './routes/Useroute.js';
+import ContactRoute from './routes/Contactsroute.js';
+import imageUplaodroute from './routes/imageUploadroute.js'; 
 
 dotenv.config();
 
@@ -21,7 +24,6 @@ const allowedOrigins=['http://localhost:5173']
 
 app.use(cors({
     origin: (origin, callback) => {
-        console.log(origin,allowedOrigins.includes(origin))
       if (allowedOrigins.includes(origin) || !origin) { 
         callback(null, true);
       } else {
@@ -39,8 +41,10 @@ app.use(cors({
 
 app.use(cookieParser());
 app.use(express.json());
-
+app.post("*/upload",imageUplaodroute),
 app.use('/auth', AuthRoute);
+app.use('/user',UserRoute);
+app.use('/contact',ContactRoute);
 
 // Catch-all route for undefined routes
 app.use((_, res) => {
