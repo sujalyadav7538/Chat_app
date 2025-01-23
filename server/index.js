@@ -7,6 +7,7 @@ import AuthRoute from './routes/Authroutes.js';
 import UserRoute from './routes/Useroute.js';
 import ContactRoute from './routes/Contactsroute.js';
 import imageUplaodroute from './routes/imageUploadroute.js'; 
+import setUpSocket from './socket.js';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const app = express();
 const Port = process.env.PORT || 3001;
 const dataBaseUrl = process.env.DATABASEURL;
 
-mongoose.connect(dataBaseUrl)
+await mongoose.connect(dataBaseUrl)
   .then(() => console.log('Database connected'))
   .catch(err => console.log(err));
 
@@ -60,6 +61,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(Port, () => {
+const server = app.listen(Port, () => {
   console.log('Listening on Port->', Port);
 });
+
+setUpSocket(server);
+
+// server();
+

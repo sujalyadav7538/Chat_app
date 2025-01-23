@@ -36,18 +36,14 @@ export const Login=async(req,res,next)=>{
         if(!email || !password){
             return res.status(401).send('Email and Password Both are Required !');
         }
-        console.log(email,password)
         const user=await User.findOne({email:email});
-        console.log("HERE",user)
         if(!user){
             return res.status(401).json({'message':'User Not found!'});
         }
-        console.log(user)
         const auth=await bcrypt.compare(password,user.password);
         if(!auth){
             return res.status(404).send('Invalid Credentials!')
         }
-        console.log('able to reach here')
         res.cookie('jwt',creatToken(email,user._id),{
             maxAge,
             secure:true,

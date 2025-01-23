@@ -5,7 +5,7 @@ import { getColors } from "@/utils/utilFunctions.js";
 export const ChatHeader = () => {
   const { setSelectedChatType, selectedChatData, setSelectedChatData } =
     userStore();
-  console.log(selectedChatData);
+
   return (
     <div className="border-b-2 h-[10vh] border-[#2f303b] flex  items-center  w-[100%] ">
       <div className="flex gap-3 px-10 items-center justify-between w-full">
